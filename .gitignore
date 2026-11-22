@@ -7,3 +7,9 @@ media-sustable/
 
 # Yerel ayarlar
 .claude/settings.local.json
+
+# Ofis panosu canlı durum dosyaları
+ofis/.canli.json
+ofis/.canli.tmp
+ofis/.canli.lock
+ofis/isler/*/.canli-gecmis.jsonl

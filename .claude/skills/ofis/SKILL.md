@@ -45,7 +45,8 @@ sohbetteki onayı yerine geçmez; kapsamı genişletiyorsa kullanıcıya sor.
 - **Bağımsız çağrıları aynı mesajda paralel başlat** (ör. backend + frontend + ai geliştirme).
 - Her dönüşten sonra: ajanın yazması gereken dosya var mı ve şablona uygun mu kontrol et (`ls`, başlıkları `grep`).
   Eksikse aynı ajana eksik kısmı söyleyerek bir kez daha gönder.
-- Her adım sonunda `00-talep.md` akış tablosunu güncelle (durum + bir satır not).
+- Akış tablosunu (`00-talep.md`) adım **başlarken** `sürüyor`, bitince `tamam` yap; atlanan adım `gerekmiyor`,
+  kullanıcı ya da ortam beklenen adım `takıldı` (notta nedeni). Başka değer yazma: ofis panosu (`ofis/pano/`) bu tabloyu okur.
 - Kullanıcıya her adımda bir iki satırlık ilerleme bilgisi ver; ajan dosyalarını sohbete kopyalama, yolunu ver.
 
 ## 3. Tam akış

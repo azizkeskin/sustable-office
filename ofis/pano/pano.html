@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ofis Panosu</title>
+<style>
+  :root {
+    --bg: #f4f2ee; --panel: #ebe7e0; --card: #fffdf9; --line: #d9d3c8;
+    --ink: #1f1d1a; --muted: #6d675e; --accent: #2f6b4f; --accent-soft: #dcebe2;
+    --warn: #a3561c; --warn-soft: #f6e4d4; --bad: #a33a3a; --bad-soft: #f5dddd;
+    --live: #2f6b4f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #161513; --panel: #1f1d1a; --card: #2a2824; --line: #3a3732;
+      --ink: #ece8e1; --muted: #a39d93; --accent: #7cc39d; --accent-soft: #24382d;
+      --warn: #e9a46c; --warn-soft: #3d2c1d; --bad: #ec8b8b; --bad-soft: #3d2222;
+      --live: #7cc39d;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 14px/1.45 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  header {
+    display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
+    padding: 16px 20px 10px;
+  }
+  h1 { margin: 0; font-size: 18px; font-weight: 650; letter-spacing: -0.01em; }
+  .ozet { color: var(--muted); font-size: 13px; }
+  .ozet b { color: var(--ink); font-weight: 600; }
+  .saat { margin-left: auto; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .hata { color: var(--bad); }
+  main {
+    display: grid; grid-auto-flow: column; grid-auto-columns: minmax(170px, 1fr);
+    gap: 10px; padding: 6px 20px 20px; overflow-x: auto; min-height: calc(100vh - 60px);
+  }
+  .sutun { background: var(--panel); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .sutun h2 {
+    margin: 0 2px 2px; font-size: 12px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--muted); display: flex; justify-content: space-between;
+  }
+  .sutun.onay h2 { color: var(--warn); }
+  .bos { color: var(--muted); font-size: 12px; padding: 6px 2px; opacity: 0.7; }
+  .kart {
+    background: var(--card); border: 1px solid var(--line); border-radius: 8px;
+    padding: 10px 11px; display: flex; flex-direction: column; gap: 6px;
+  }
+  .kart.onay-bekliyor { border-color: var(--warn); box-shadow: inset 3px 0 0 var(--warn); }
+  .kart.takildi { border-color: var(--bad); box-shadow: inset 3px 0 0 var(--bad); }
+  .kart.canli { box-shadow: inset 3px 0 0 var(--live); }
+  .ust { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+  .kod { font-weight: 650; font-size: 13px; }
+  .kod a { color: inherit; text-decoration: none; }
+  .kod a:hover { text-decoration: underline; }
+  .rozet { font-size: 11px; padding: 1px 7px; border-radius: 99px; background: var(--panel); color: var(--muted); white-space: nowrap; }
+  .adim { font-size: 12px; color: var(--muted); }
+  .adim b { color: var(--ink); font-weight: 600; }
+  .not { font-size: 12px; color: var(--muted); }
+  .etiket { font-size: 12px; padding: 3px 7px; border-radius: 6px; width: fit-content; }
+  .etiket.onay { background: var(--warn-soft); color: var(--warn); font-weight: 600; }
+  .etiket.takildi { background: var(--bad-soft); color: var(--bad); font-weight: 600; }
+  .ajan { display: flex; align-items: center; gap: 7px; font-size: 12px; background: var(--accent-soft); color: var(--accent); padding: 3px 8px; border-radius: 6px; width: fit-content; }
+  .ajan .nokta { width: 7px; height: 7px; border-radius: 50%; background: var(--live); animation: nabiz 1.4s ease-in-out infinite; }
+  .ajan .sure { opacity: 0.8; font-variant-numeric: tabular-nums; }
+  @keyframes nabiz { 50% { opacity: 0.25; } }
+  @media (prefers-reduced-motion: reduce) { .ajan .nokta { animation: none; } }
+  .alt { display: flex; gap: 10px; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; flex-wrap: wrap; }
+  .kk-cubuk { height: 4px; border-radius: 99px; background: var(--panel); overflow: hidden; display: flex; }
+  .kk-cubuk span.g { background: var(--accent); }
+  .kk-cubuk span.k { background: var(--bad); }
+  @media (max-width: 640px) {
+    header { padding: 12px 16px 8px; }
+    main { padding: 6px 16px 16px; grid-auto-columns: 82vw; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Ofis Panosu</h1>
+  <div class="ozet" id="ozet">yükleniyor…</div>
+  <div class="saat" id="saat"></div>
+</header>
+<main id="pano"></main>
+<script>
+const YENILEME_MS = 3000;
+const TUR_ADI = { "hata": "hata", "küçük iş": "küçük iş", "özellik": "özellik" };
+
+function el(etiket, sinif, metin) {
+  const e = document.createElement(etiket);
+  if (sinif) e.className = sinif;
+  if (metin !== undefined) e.textContent = metin;
+  return e;
+}
+
+function sure(sn) {
+  sn = Math.max(0, Math.floor(sn));
+  if (sn < 60) return sn + " sn";
+  const dk = Math.floor(sn / 60);
+  if (dk < 60) return dk + " dk";
+  return Math.floor(dk / 60) + " sa " + (dk % 60) + " dk";
+}
+
+function once(zaman, simdi) {
+  if (!zaman) return "";
+  return sure(simdi - zaman) + " önce";
+}
+
+function kartCiz(k, simdi) {
+  const c = el("div", "kart");
+  if (k.onay_bekliyor) c.classList.add("onay-bekliyor");
+  else if (k.durum === "takıldı") c.classList.add("takildi");
+  else if (k.canli.length) c.classList.add("canli");
+
+  const ust = el("div", "ust");
+  const kod = el("div", "kod");
+  const a = el("a", "", k.kod);
+  a.href = "vscode://file" + k.dosya;
+  a.title = "00-talep.md dosyasını VS Code'da aç";
+  kod.appendChild(a);
+  ust.appendChild(kod);
+  if (k.tur) ust.appendChild(el("span", "rozet", TUR_ADI[k.tur] || k.tur));
+  c.appendChild(ust);
+
+  if (k.durum !== "tamam") {
+    const adim = el("div", "adim");
+    adim.append(el("b", "", k.adim), " · " + k.durum);
+    c.appendChild(adim);
+  }
+  if (k.onay_bekliyor) c.appendChild(el("div", "etiket onay", "Kullanıcı onayı bekleniyor"));
+  if (k.durum === "takıldı") c.appendChild(el("div", "etiket takildi", "Takıldı"));
+
+  for (const ajan of k.canli) {
+    const p = el("div", "ajan");
+    p.title = ajan.kesin ? "Çalışıyor" : "Başlatıldı (başlangıç olayı alınmadı)";
+    p.append(el("span", "nokta"), el("span", "", ajan.ajan), el("span", "sure", sure(simdi - ajan.basladi)));
+    c.appendChild(p);
+  }
+
+  if (k.not) c.appendChild(el("div", "not", k.not));
+
+  if (k.kk) {
+    const cubuk = el("div", "kk-cubuk");
+    cubuk.title = `KK: ${k.kk_gecen} geçti, ${k.kk_kalan} kaldı, ${k.kk} toplam`;
+    const g = el("span", "g"); g.style.width = (100 * k.kk_gecen / k.kk) + "%";
+    const r = el("span", "k"); r.style.width = (100 * k.kk_kalan / k.kk) + "%";
+    cubuk.append(g, r);
+    c.appendChild(cubuk);
+  }
+
+  const alt = el("div", "alt");
+  if (k.kk) alt.appendChild(el("span", "", `KK ${k.kk_gecen}/${k.kk}` + (k.kk_kalan ? ` · ${k.kk_kalan} kaldı` : "")));
+  if (k.inceleme) alt.appendChild(el("span", "", "inceleme: " + k.inceleme));
+  alt.appendChild(el("span", "", once(k.son_degisiklik, simdi)));
+  c.appendChild(alt);
+  return c;
+}
+
+function ciz(veri) {
+  const simdi = veri.zaman;
+  const pano = document.getElementById("pano");
+  const yeni = document.createDocumentFragment();
+  for (const s of veri.sutunlar) {
+    const kartlar = veri.kartlar.filter(k => k.sutun === s.anahtar);
+    const sutun = el("section", "sutun" + (s.ad.startsWith("◆") ? " onay" : ""));
+    const h = el("h2");
+    h.append(el("span", "", s.ad), el("span", "", kartlar.length ? String(kartlar.length) : ""));
+    sutun.appendChild(h);
+    if (!kartlar.length) sutun.appendChild(el("div", "bos", "—"));
+    for (const k of kartlar) sutun.appendChild(kartCiz(k, simdi));
+    yeni.appendChild(sutun);
+  }
+  pano.replaceChildren(yeni);
+
+  const acik = veri.kartlar.filter(k => k.durum !== "tamam").length;
+  const onay = veri.kartlar.filter(k => k.onay_bekliyor).length;
+  const ozet = document.getElementById("ozet");
+  ozet.replaceChildren();
+  ozet.append(el("b", "", String(acik)), " açık iş · ", el("b", "", String(veri.canli_sayisi)), " çalışan ajan");
+  if (onay) ozet.append(" · ", el("b", "", String(onay)), " onay bekliyor");
+  document.getElementById("saat").textContent =
+    new Date(simdi * 1000).toLocaleTimeString("tr-TR") + " güncellendi";
+}
+
+async function yenile() {
+  try {
+    const r = await fetch("/api/pano", { cache: "no-store" });
+    if (!r.ok) throw new Error(r.status);
+    ciz(await r.json());
+  } catch (e) {
+    const saat = document.getElementById("saat");
+    saat.textContent = "Sunucuya ulaşılamıyor";
+    saat.classList.add("hata");
+    return;
+  }
+  document.getElementById("saat").classList.remove("hata");
+}
+
+yenile();
+setInterval(yenile, YENILEME_MS);
+</script>
+</body>
+</html>

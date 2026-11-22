@@ -24,12 +24,15 @@
 - <Bu işte yapılmayacak olanlar>
 
 ## Akış durumu
+Durum değerleri yalnız şunlardır: `bekliyor` · `sürüyor` · `tamam` · `gerekmiyor` · `takıldı`.
+Ofis panosu (`ofis/pano/`) bu tabloyu okur; başka değer yazma.
+
 | Adım | Durum | Not |
 |---|---|---|
 | Analiz | bekliyor | |
 | İş Birimi incelemesi | bekliyor | |
 | ◆ Onay 1 | bekliyor | |
-| Tasarım | bekliyor / gerekmiyor | |
+| Tasarım | bekliyor | |
 | Görev dağılımı | bekliyor | |
 | Geliştirme | bekliyor | |
 | Test | bekliyor | |

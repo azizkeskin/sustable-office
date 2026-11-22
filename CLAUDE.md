@@ -103,3 +103,10 @@ Kurallar:
 `ofis/bilgi/` İş Birimi'nin standart özetlerini tutar (iş tarafı). Kod tarafı bilgisi
 `sustable-backend/.claude/rules/*.md` dosyalarındadır; iki taraf birbirine bağlantı verir, içerik kopyalanmaz.
 Standart metinleri olduğu gibi aktarılmaz; yalnız kendi özetlerimiz ve kontrol listelerimiz tutulur.
+
+## Ofis panosu
+
+`ofis/pano/pano.py` (port 4320, yalnız 127.0.0.1) işleri akış adımlarına göre kanban olarak gösterir; veriyi
+`00-talep.md` akış tablosundan, KK sayısını `01-analiz.md`'den, test sonucunu `06-test-raporu.md`'den okur.
+Şu an çalışan ajanları `.claude/hooks/ofis_canli.py` yazar (ajan isteminde `İş klasörü:` satırı olmalı).
+Masaüstündeki "Pixel Agents Ofis" kısayolu panoyu Pixel Agents ile birlikte açar.
