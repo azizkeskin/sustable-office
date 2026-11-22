@@ -90,7 +90,7 @@ Kurallar:
   |---|---|---|
   | `sustable-backend` | `develmaster` | `test`, `main` |
   | `sustable-frontend` | `develmaster` | `develop`, `main` |
-  | `sustable-admin` | `main` (doğrulanmalı) | `test` |
+  | `sustable-admin` | `main` | `test` |
   | `sustable-ai` | `master` | — |
   | `media-sustable` | `main` | — |
 
