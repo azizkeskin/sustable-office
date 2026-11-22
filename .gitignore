@@ -1,0 +1,9 @@
+# Alt depolar kendi git depolarıdır; ofis deposu yalnız ofis dosyalarını izler.
+sustable-backend/
+sustable-frontend/
+sustable-admin/
+sustable-ai/
+media-sustable/
+
+# Yerel ayarlar
+.claude/settings.local.json
