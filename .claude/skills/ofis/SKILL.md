@@ -81,6 +81,7 @@ sohbetteki onayı yerine geçmez; kapsamı genişletiyorsa kullanıcıya sor.
     - Linear'dan geldiyse issue'ya özet yorum ve durum güncellemesi **önermek** için kullanıcıya sor; onaysız yazma.
     - Bu işte bir ajan aynı hatayı tekrarladıysa ya da kullanıcı bir düzeltme yaptıysa: ilgili deponun
       `tasks/lessons.md` dosyasına ders ekle ya da ajan tanımında düzeltme **öner**.
+    - `02-is-birimi.md` içinde "Bilgi tabanı notu" varsa `ofis/bilgi/` için güncelleme öner; onaysız değiştirme.
     - `00-talep.md` akış tablosunda Kapanış = tamam.
 
 ## 4. Hızlı yol
